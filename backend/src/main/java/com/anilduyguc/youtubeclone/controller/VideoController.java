@@ -1,5 +1,7 @@
 package com.anilduyguc.youtubeclone.controller;
 
+import com.anilduyguc.youtubeclone.dto.UploadVideoResponse;
+import com.anilduyguc.youtubeclone.dto.VideoDto;
 import com.anilduyguc.youtubeclone.service.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,11 +16,20 @@ public class VideoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void uploadVideo(@RequestParam("file") MultipartFile multipartFile){
-        videoService.uploadVideo(multipartFile);
+    public UploadVideoResponse uploadVideo(@RequestParam("file") MultipartFile multipartFile){
+        return videoService.uploadVideo(multipartFile);
     }
-    @GetMapping("/anan")
-    public String get(){
-        return "Hello WORLD";
+
+    @PostMapping("/thumbnail")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String uploadThumbnail(@RequestParam("file") MultipartFile multipartFile, @RequestParam("videoId") String videoId){
+        return videoService.uploadThumbnail(multipartFile, videoId);
     }
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    public VideoDto editVideoMetaData(@RequestBody VideoDto videoDto){
+        return videoService.editVideo(videoDto);
+    }
+
 }
