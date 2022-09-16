@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {OidcSecurityService} from "angular-auth-oidc-client";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-header',
@@ -8,7 +9,7 @@ import {OidcSecurityService} from "angular-auth-oidc-client";
 })
 export class HeaderComponent implements OnInit {
   isAuthenticated: boolean = false;
-  constructor(private oidcSecurityService: OidcSecurityService) { }
+  constructor(private oidcSecurityService: OidcSecurityService, private router: Router) { }
 
   ngOnInit(): void {
     this.oidcSecurityService.isAuthenticated$.subscribe(({isAuthenticated}) => {
@@ -21,5 +22,10 @@ export class HeaderComponent implements OnInit {
   }
   logout(){
     this.oidcSecurityService.logoffAndRevokeTokens();
+    this.oidcSecurityService.logoffLocal();
+  }
+
+  goHome() {
+    this.router.navigateByUrl("/featured");
   }
 }

@@ -135,7 +135,7 @@ public class VideoService {
     public void addComment(String videoId, CommentDto commentDto) {
         Video video = getVideoById(videoId);
         Comment comment = new Comment();
-        comment.setText(comment.getText());
+        comment.setText(commentDto.getCommentText());
         comment.setAuthorId(commentDto.getAuthorId());
         video.addComment(comment);
 
@@ -147,7 +147,6 @@ public class VideoService {
         List<Comment> commentList = video.getCommentList();
 
         return commentList.stream().map(this::mapToCommentDto).toList();
-
     }
 
     private CommentDto mapToCommentDto(Comment comment) {

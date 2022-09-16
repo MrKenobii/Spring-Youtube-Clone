@@ -14,6 +14,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class UserRegistrationService {
     private String userInfoEndpoint;
     private final UserRepository userRepository;
 
-    public void registerUser(String tokenValue){
+    public String registerUser(String tokenValue){
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .GET()
                 .uri(URI.create(userInfoEndpoint))
@@ -40,17 +41,23 @@ public class UserRegistrationService {
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             UserInfoDto userInfoDto = objectMapper.readValue(body, UserInfoDto.class);
 
-            User user = new User();
+            Optional<User> bySub = userRepository.findBySub(userInfoDto.getSub());
+            if (bySub.isPresent()) return bySub.get().getId();
+            else {
+                User user = new User();
 
-            user.setFirstName(userInfoDto.getGivenName());
-            user.setLastName(userInfoDto.getFamilyName());
-            user.setFullName(userInfoDto.getName());
-            user.setEmailAddress(userInfoDto.getEmail());
-            user.setSub(userInfoDto.getSub());
+                user.setFirstName(userInfoDto.getGivenName());
+                user.setLastName(userInfoDto.getFamilyName());
+                user.setFullName(userInfoDto.getName());
+                user.setEmailAddress(userInfoDto.getEmail());
+                user.setSub(userInfoDto.getSub());
 
-            userRepository.save(user);
+                return userRepository.save(user).getId();
+
+            }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+
     }
 }
